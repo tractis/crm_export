@@ -1,0 +1,8 @@
+en-US:
+  language: English
+
+  # crm_export plugin internalization.
+  #----------------------------------------------------------------------------
+  export: Export
+  to_csv: "{{value}} in csv format"
+  to_ldif: "{{value}} in ldif format"

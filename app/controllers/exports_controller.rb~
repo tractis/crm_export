@@ -1,0 +1,69 @@
+class ExportsController < ApplicationController
+  before_filter :require_user
+
+  # Get /export
+  # ------------------------------------------------------------------------------
+  def index
+    redirect_to :csv
+  end
+
+  # Get /export
+  # ------------------------------------------------------------------------------
+  def contacts
+    format = params[:id]
+       
+    @contacts = Contact.my(@current_user)
+    
+    unless @contacts.blank?
+      if format == "csv"
+        require "fastercsv"
+        csv_string = FasterCSV.generate do |csv|
+          csv << ["first_name", "last_name", "street1", "street2", "city", "state", "zipcode", "country", "title", "department", "email", "alt_email", "phone", "mobile", "fax", "blog", "linkedin", "facebook", "twitter", "born_on", "note"]        
+          @contacts.each do |c|            
+            require 'ruby-debug';debugger
+	    c.background_info == "" if c.background_info.blank?
+            comment = c.background_info + "\n" + get_comment(c.comments)
+            c.account == nil ? company = "" : company = c.account.name
+            a = c.business_address
+            if Setting.single_address_field == true
+              street1 = a.full_address; street2 = a.street2; city = a.city; state = a.state; zipcode = a.zipcode; country = a.country
+            else
+              street1 = a.street1; street2 = a.street2; city = a.city; state = a.state; zipcode = a.zipcode; country = a.country
+            end
+            csv << [c.first_name, c.last_name, street1, street2, city, state, zipcode, country, c.title, c.department, c.email, c.alt_email, c.phone, c.mobile, c.fax, c.blog, c.linkedin, c.facebook, c.twitter, c.born_on, comment]
+
+          end
+        end
+        if format == "csv"
+          send_data csv_string, :type => "text/plain", :filename=>"contacts.csv", :disposition => 'attachment'
+        end        
+      end
+    else
+      redirect_to profile_path
+    end
+#    filename ||= params[:action]
+#    filename += '.csv'
+#  
+#    if request.env['HTTP_USER_AGENT'] =~ /msie/i
+#      headers['Pragma'] = 'public'
+#      headers["Content-type"] = "text/plain" 
+#      headers['Cache-Control'] = 'no-cache, must-revalidate, post-check=0, pre-check=0'
+#      headers['Content-Disposition'] = "attachment; filename=\"#{filename}\"" 
+#      headers['Expires'] = "0" 
+#    else
+#      headers["Content-Type"] ||= 'text/csv'
+#      headers["Content-Disposition"] = "attachment; filename=\"#{filename}\"" 
+#    end
+#  
+#    render :layout => false
+    
+    
+  end  
+  
+  private
+    def get_comment(comments)
+      comment = ""
+      comments.each { |c| comment += "#{c.updated_at}\n#{c.comment}\n\n" }
+      comment
+    end
+end
