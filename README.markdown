@@ -10,6 +10,7 @@ Installation
 
 The plugin can be installed by running:
 
+    gem install fastercsv
     script/plugin install git://github.com/tractis/crm_export.git
 
 Then restart your web server.
