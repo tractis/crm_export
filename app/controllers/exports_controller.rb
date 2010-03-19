@@ -11,8 +11,10 @@ class ExportsController < ApplicationController
   # ------------------------------------------------------------------------------
   def contacts
     format = params[:id]
-       
-    @contacts = Contact.my(@current_user)
+    
+    conditions = ["contacts.user_id=? OR contacts.assigned_to=? OR permissions.user_id=? OR access='Public'", @current_user]
+    @contacts = Contact.my(:user => @current_user, :include => [:permissions, :comments, :account, :business_address], :conditions => conditions)
+    @single_address_field = Setting.single_address_field
     
     unless @contacts.blank?
       if format == "csv"
@@ -48,7 +50,7 @@ class ExportsController < ApplicationController
   
     def get_address(address)
       add = {}
-      if Setting.single_address_field == true
+      if @single_address_field == true
         address.full_address.blank? ? add["street1"] = "" : add["street1"] = address.full_address
         add["street2"] = "" 
         add["city"] = ""
