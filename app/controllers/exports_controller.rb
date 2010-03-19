@@ -13,7 +13,7 @@ class ExportsController < ApplicationController
     format = params[:id]
     
     conditions = ["contacts.user_id=? OR contacts.assigned_to=? OR permissions.user_id=? OR contacts.access='Public'", @current_user.id, @current_user.id, @current_user.id]
-    @contacts = Contact.find(:all, :include => [:permissions, :comments, :account, :business_address], :conditions => conditions)
+    @contacts = Contact.find(:all, :include => [:permissions, :account, :business_address], :conditions => conditions)
     @single_address_field = Setting.single_address_field
     
     unless @contacts.blank?
