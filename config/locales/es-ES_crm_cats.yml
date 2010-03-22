@@ -5,4 +5,9 @@ es-ES:
   #----------------------------------------------------------------------------
   export: Exportación
   to_csv: "{{value}} en formato csv"
-  to_ldif: "{{value}} en formato ldif"  
+  to_ldif: "{{value}} en formato ldif"
+  export_download: Descargar último export ({{value}})
+  export_no_files: No tiene ficheros generados
+  export_generation_message: Su solicitud de generación de exportaciones se ha recibido, pronto recibirá una confirmación por correo electrónico
+  export_job_complete: Exportación completa, lista para descarga
+  export_ack_intro: La exportación está lista, para la descarga vaya a su perfil.

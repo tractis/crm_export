@@ -6,3 +6,8 @@ en-US:
   export: Export
   to_csv: "{{value}} in csv format"
   to_ldif: "{{value}} in ldif format"
+  export_download: Download latest export ({{value}})
+  export_no_files: You don't have any export for download
+  export_generation_message: Your request for export generation has been received, soon you will receive an email confirmation
+  export_job_complete: Export job complete, ready to download
+  export_ack_intro: Your export data is ready, you can download it from your profile.
