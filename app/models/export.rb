@@ -23,9 +23,9 @@ class Export
       end
       path = "#{RAILS_ROOT}/files/crm_export/csv"
       FileUtils.mkdir_p path unless File.directory? path
-      File.open("#{path}/contacts_#{@current_user.ivars["attributes"]["id"]}.csv", 'w') {|f| f.write(csv_string) }
+      File.open("#{path}/contacts_#{@current_user.id}.csv", 'w') {|f| f.write(csv_string) }
       # notify
-      ack_email = ExportNotifier.create_notify_job(@current_user.ivars["attributes"]["email"])
+      ack_email = ExportNotifier.create_notify_job(@current_user.email)
       ExportNotifier.deliver(ack_email)
     end
   end
