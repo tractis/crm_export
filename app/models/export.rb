@@ -11,7 +11,8 @@ class Export
     
     unless @contacts.blank?
       require "fastercsv"
-      require 'fileutils'
+      require "fileutils"
+      require "iconv"
       csv_string = FasterCSV.generate do |csv|
         csv << ["first_name", "last_name", "organization", "street1", "street2", "city", "state", "zipcode", "country", "title", "department", "email", "alt_email", "phone", "mobile", "fax", "blog", "linkedin", "facebook", "twitter", "birth_day", "notes"]
         @contacts.each do |c|
@@ -23,7 +24,7 @@ class Export
       end
       path = "#{RAILS_ROOT}/files/crm_export/csv"
       FileUtils.mkdir_p path unless File.directory? path
-      File.open("#{path}/contacts_#{@current_user.id}.csv", 'w') {|f| f.write(csv_string) }
+      File.open("#{path}/contacts_#{@current_user.id}.csv", 'w') {|f| f.write(Iconv.iconv("ISO-8859-15", "UTF-8", csv_string)) }
       # notify
       ack_email = ExportNotifier.create_notify_job(@current_user.email)
       ExportNotifier.deliver(ack_email)
