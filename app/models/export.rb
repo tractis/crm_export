@@ -2,29 +2,29 @@ class Export
   attr_accessor :current_user
 
   def initialize(current_user)
-    self.current_user = current_user
+    self.current_user = current_user    
   end
 
   def perform
     @contacts = Contact.my(:user => @current_user)
-    @single_address_field = Setting.single_address_field
+    @single_address_field = Setting.single_address_field  
     
     unless @contacts.blank?
       require "fastercsv"
-      require "fileutils"
+      require 'fileutils'
       require "iconv"
-      csv_string = FasterCSV.generate do |csv|
-        csv << ["first_name", "last_name", "organization", "street1", "street2", "city", "state", "zipcode", "country", "title", "department", "email", "alt_email", "phone", "mobile", "fax", "blog", "linkedin", "facebook", "twitter", "birth_day", "notes"]
+      csv_string = FasterCSV.generate(:force_quotes => true, :row_sep => "\r\n") do |csv|
+        csv << ['First Name', 'Last Name', 'Organization', 'Address', 'street2', 'City', 'State', 'ZIP Code', 'Country', 'Title', 'department', 'E-mail', 'alt_email', 'phone', 'mobile', 'fax', 'blog', 'linkedin', 'facebook', 'twitter', 'birth_day', 'Notes']        
         @contacts.each do |c|
             comment = get_comment(c)
             organization = get_account(c.account)
-            address = get_address(c.business_address)
+            address = get_address(c.business_address)           
             csv << [c.first_name, c.last_name, organization, address["street1"], address["street2"], address["city"], address["state"], address["zipcode"], address["country"], c.title, c.department, c.email, c.alt_email, c.phone, c.mobile, c.fax, c.blog, c.linkedin, c.facebook, c.twitter, c.born_on, comment]
         end    
       end
       path = "#{RAILS_ROOT}/files/crm_export/csv"
       FileUtils.mkdir_p path unless File.directory? path
-      File.open("#{path}/contacts_#{@current_user.id}.csv", 'w') {|f| f.write(Iconv.iconv("ISO-8859-15", "UTF-8", csv_string)) }
+      File.open("#{path}/contacts_#{@current_user.id}.csv", 'w') {|f| f.write(Iconv.iconv('Windows-1252', "UTF-8", csv_string)) }
       # notify
       ack_email = ExportNotifier.create_notify_job(@current_user.email)
       ExportNotifier.deliver(ack_email)

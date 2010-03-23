@@ -13,7 +13,6 @@ class ExportsController < ApplicationController
     format = params[:id]
 
     if format == "csv"
-      #BatchImporter.new(Export.csv.send_later(:current_user, @current_user))
       Delayed::Job.enqueue Export.new(@current_user)
       flash[:info] = t(:export_generation_message)
     else
